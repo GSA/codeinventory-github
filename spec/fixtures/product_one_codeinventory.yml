@@ -1,0 +1,9 @@
+name: Product One
+description: An awesome product.
+license: http://www.usa.gov/publicdomain/label/1.0/
+openSourceProject: 1
+governmentWideReuseProject: 1
+tags:
+  - usa
+contact:
+  email: example@example.com

@@ -1,0 +1,9 @@
+name: CodeInventory GitHub
+description: A plugin for the CodeInventory gem that harvests project metadata from YAML or JSON files in GitHub repositories.
+license: https://github.com/GSA/codeinventory-github/blob/master/LICENSE.md
+openSourceProject: 1
+governmentWideReuseProject: 1
+tags:
+  - code.gov
+contact:
+  email: jeffrey.fredrickson@gsa.gov

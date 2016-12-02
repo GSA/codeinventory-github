@@ -1,0 +1,18 @@
+{
+  "name": ".codeinventory.yml",
+  "path": ".codeinventory.yml",
+  "sha": "0936e1296a83c21f8b218ed9117a0af868bbe8e9",
+  "size": 104,
+  "url": "https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml?ref=master",
+  "html_url": "https://github.com/GSA/ProductOne/blob/master/.codeinventory.yml",
+  "git_url": "https://api.github.com/repos/GSA/ProductOne/git/blobs/0936e1296a83c21f8b218ed9117a0af868bbe8e9",
+  "download_url": "https://raw.githubusercontent.com/GSA/ProductOne/master/.codeinventory.yml",
+  "type": "file",
+  "content": "bmFtZTogUHJvZHVjdCBPbmUNCmRlc2NyaXB0aW9uOiBBbiBhd2Vzb21lIHByb2R1Y3QuDQpsaWNlbnNlOiBodHRwOi8vd3d3LnVzYS5nb3YvcHVibGljZG9tYWluL2xhYmVsLzEuMC8NCm9wZW5Tb3VyY2VQcm9qZWN0OiAxDQpnb3Zlcm5tZW50V2lkZVJldXNlUHJvamVjdDogMQ0KdGFnczoNCiAgLSB1c2ENCmNvbnRhY3Q6DQogIGVtYWlsOiBleGFtcGxlQGV4YW1wbGUuY29tDQo=",
+  "encoding": "base64",
+  "_links": {
+    "self": "https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml?ref=master",
+    "git": "https://api.github.com/repos/GSA/ProductOne/git/blobs/0936e1296a83c21f8b218ed9117a0af868bbe8e9",
+    "html": "https://github.com/GSA/ProductOne/blob/master/.codeinventory.yml"
+  }
+}

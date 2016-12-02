@@ -1,0 +1,14 @@
+{
+  "name": "Product Two",
+  "description": "Another awesome product, but not open source for security reasons.",
+  "license": "http://www.usa.gov/publicdomain/label/1.0/",
+  "openSourceProject": "0",
+  "governmentWideReuseProject": "0",
+  "tags": [
+    "national-security",
+    "top-secret"
+  ],
+  "contact": {
+    "email": "example@example.com"
+  }
+}

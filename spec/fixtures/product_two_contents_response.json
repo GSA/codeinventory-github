@@ -1,0 +1,18 @@
+{
+  "name": ".codeinventory.yml",
+  "path": ".codeinventory.yml",
+  "sha": "0936e1296a83c21f8b218ed9117a0af868bbe8e9",
+  "size": 104,
+  "url": "https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.yml?ref=master",
+  "html_url": "https://github.com/GSA/ProductTwo/blob/master/.codeinventory.yml",
+  "git_url": "https://api.github.com/repos/GSA/ProductTwo/git/blobs/0936e1296a83c21f8b218ed9117a0af868bbe8e9",
+  "download_url": "https://raw.githubusercontent.com/GSA/ProductTwo/master/.codeinventory.yml",
+  "type": "file",
+  "content": "ew0KICAibmFtZSI6ICJQcm9kdWN0IFR3byIsDQogICJkZXNjcmlwdGlvbiI6ICJBbm90aGVyIGF3ZXNvbWUgcHJvZHVjdCwgYnV0IG5vdCBvcGVuIHNvdXJjZSBmb3Igc2VjdXJpdHkgcmVhc29ucy4iLA0KICAibGljZW5zZSI6ICJodHRwOi8vd3d3LnVzYS5nb3YvcHVibGljZG9tYWluL2xhYmVsLzEuMC8iLA0KICAib3BlblNvdXJjZVByb2plY3QiOiAiMCIsDQogICJnb3Zlcm5tZW50V2lkZVJldXNlUHJvamVjdCI6ICIwIiwNCiAgInRhZ3MiOiBbDQogICAgIm5hdGlvbmFsLXNlY3VyaXR5IiwNCiAgICAidG9wLXNlY3JldCINCiAgXSwNCiAgImNvbnRhY3QiOiB7DQogICAgImVtYWlsIjogImV4YW1wbGVAZXhhbXBsZS5jb20iDQogIH0NCn0NCg==",
+  "encoding": "base64",
+  "_links": {
+    "self": "https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.yml?ref=master",
+    "git": "https://api.github.com/repos/GSA/ProductTwo/git/blobs/0936e1296a83c21f8b218ed9117a0af868bbe8e9",
+    "html": "https://github.com/GSA/ProductTwo/blob/master/.codeinventory.yml"
+  }
+}
