@@ -17,23 +17,17 @@ module CodeInventory
       repos = client.organization_repositories(@org)
       projects = []
       repos.each do |repo|
-        begin
-          contents_metadata = client.contents(repo[:full_name], path: ".codeinventory.yml")
-          type = :yaml
-          raw_content = Base64.decode64(contents_metadata[:content])
-        rescue Octokit::NotFound
-          begin
-            contents_metadata = client.contents(repo[:full_name], path: ".codeinventory.json")
-            type = :json
-            raw_content = Base64.decode64(contents_metadata[:content])
-          rescue Octokit::NotFound
-            # Ignore repositories that don't have a CodeInventory metadata file
+        repo_contents = client.contents(repo[:full_name], path: "/")
+        filenames = [ ".codeinventory.yml", "codeinventory.yml", ".codeinventory.json", "codeinventory.json"]
+        inventory_file = repo_contents.select { |file| filenames.include? file[:name] }.first
+        unless inventory_file.nil?
+          file_content = client.contents(repo[:full_name], path: inventory_file[:path])
+          raw_content = Base64.decode64(file_content[:content])
+          if inventory_file[:name].end_with? ".yml"
+            projects << YAML.load(raw_content).to_hash
+          elsif inventory_file[:name].end_with? ".json"
+            projects << JSON.parse(raw_content)
           end
-        end
-        if type == :yaml
-          projects << YAML.load(raw_content).to_hash
-        elsif type == :json
-          projects << JSON.parse(raw_content)
         end
       end
       projects
