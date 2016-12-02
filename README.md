@@ -26,7 +26,7 @@ Basically:
 
 ```ruby
 require "codeinventory"
-require "codeinventory-github"
+require "codeinventory/github"
 
 github_source = CodeInventory::GitHub.new(access_token: "GITHUB_ACCESS_TOKEN", org: "github_org_name")
 
