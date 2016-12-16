@@ -14,3 +14,7 @@ def file_fixture(fixture_name)
     raise ArgumentError, "the fixtures directory does not contain a file named '#{fixture_name}'"
   end
 end
+
+def stub_and_return_json(url, fixture_name)
+  stub_request(:get, url).to_return(:status => 200, :body => file_fixture(fixture_name), :headers => {"Content-Type" => "application/json"})
+end
