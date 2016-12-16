@@ -78,6 +78,33 @@ contact:
 }
 ```
 
+### Using overrides
+
+You can override any of the inventory fields by passing an override hash.
+
+```ruby
+overrides = {
+  tags: ["my-tag-1", "my-tag-2"],
+  contact: {
+    email: "me@example.com"
+  }
+}
+github_source = CodeInventory::GitHub.new(access_token: "GITHUB_ACCESS_TOKEN", org: "github_org_name", overrides: overrides)
+```
+
+In this example, `codeinventory-github` will set the tags on all your projects to `my-tag-1` and `my-tag-2` also use the contact email you specified on all projects.
+
+### Excluding repositories
+
+You can exclude any repository from scanning.
+
+```ruby
+exclusions = ["not-a-real-product", "DontScanMe"]
+github_source = CodeInventory::GitHub.new(access_token: "GITHUB_ACCESS_TOKEN", org: "github_org_name", exclude: exclusions)
+```
+
+In this example, `codeinventory-github` will ignore the repositories named `not-a-real-product` or `DontScanMe`.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
