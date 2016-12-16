@@ -1,0 +1,25 @@
+{
+  "name": "LICENSE.md",
+  "path": "LICENSE.md",
+  "sha": "8e5a6679fab02f62a1a6af2c77680194bf50a0e2",
+  "size": 117,
+  "url": "https://api.github.com/repos/GSA/ProductTwo/contents/LICENSE.md?ref=dev",
+  "html_url": "https://github.com/GSA/ProductTwo/blob/dev/LICENSE.md",
+  "git_url": "https://api.github.com/repos/GSA/ProductTwo/git/blobs/8e5a6679fab02f62a1a6af2c77680194bf50a0e2",
+  "download_url": "https://raw.githubusercontent.com/GSA/ProductTwo/dev/LICENSE.md",
+  "type": "file",
+  "content": "IyBMaWNlbnNlCgpBcyBhIHdvcmsgb2YgdGhlIFVuaXRlZCBTdGF0ZXMgR292\nZXJubWVudCwgdGhpcyBwcm9qZWN0IGlzIGluIHRoZSBwdWJsaWMgZG9tYWlu\nIHdpdGhpbiB0aGUgVW5pdGVkIFN0YXRlcy4K\n",
+  "encoding": "base64",
+  "_links": {
+    "self": "https://api.github.com/repos/GSA/ProductTwo/contents/LICENSE.md?ref=dev",
+    "git": "https://api.github.com/repos/GSA/ProductTwo/git/blobs/8e5a6679fab02f62a1a6af2c77680194bf50a0e2",
+    "html": "https://github.com/GSA/ProductTwo/blob/dev/LICENSE.md"
+  },
+  "license": {
+    "key": "other",
+    "name": "Other",
+    "spdx_id": null,
+    "url": null,
+    "featured": false
+  }
+}
