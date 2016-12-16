@@ -2,7 +2,11 @@
 
 *_This is an experimental gem that is currently in an alpha stage. The features and interface are unstable and may change at any time._*
 
-The `codeinventory-github` gem is a [CodeInventory](https://github.com/GSA/codeinventory) plugin. This plugin allows CodeInventory to gather metadata from `.codeinventory.yml` or `.codeinventory.json` files in GitHub repositories.
+The `codeinventory-github` gem is a [CodeInventory](https://github.com/GSA/codeinventory) plugin. This plugin allows CodeInventory to gather metadata from GitHub repositories. It builds a list of projects based on a combination of:
+
+* `.codeinventory.yml` and `.codeinventory.json` files in GitHub repositories
+* GitHub metadata
+* Manually specified overrides
 
 ## Installation
 
@@ -31,10 +35,16 @@ require "codeinventory/github"
 github_source = CodeInventory::GitHub.new(access_token: "GITHUB_ACCESS_TOKEN", org: "github_org_name")
 
 inventory = CodeInventory::Inventory.new(github_source)
-inventory.projects # Returns an array of all projects in the GitHub org that have metadata
+inventory.projects # Returns an array of projects in the GitHub org
 ```
 
-When using `CodeInventory::GitHub`, provide a [GitHub access token](https://developer.github.com/v3/oauth/) and the GitHub organization name (e.g., "[GSA](https://github.com/GSA/)"). Each repository within the organization that needs to be included in the project listing should have a `.codeinventory.yml` or `.codeinventory.json` file in the repository's root directory.
+When using `CodeInventory::GitHub`, provide a [GitHub access token](https://developer.github.com/v3/oauth/) and the GitHub organization name (e.g., "[GSA](https://github.com/GSA/)").
+
+The `codeinventory-github` plugin will then automatically harvest your project metadata from GitHub metadata.
+
+### Using inventory files
+
+If you want more fine-grained control over project metadata beyond what is in the GitHub metadata, you can optionally include a `.codeinventory.yml` or `.codeinventory.json` file in the root directories of your GitHub project repositories. For each repository that has such a file, `codeinventory-github` will automatically use the metadata from it.
 
 #### YAML Format (.codeinventory.yml)
 
