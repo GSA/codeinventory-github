@@ -30,6 +30,8 @@ module CodeInventory
         repo_metadata["tags"] = tags(repo, inventory_file_metadata)
         repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
         repo_metadata["repository"] = repository(repo, inventory_file_metadata)
+        organization = organization(repo, inventory_file_metadata)
+        repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
         projects << repo_metadata
       end
       projects
@@ -146,6 +148,17 @@ module CodeInventory
       return @overrides[:repository] if @overrides[:repository]
       return inventory_file_metadata["repository"] if inventory_file_metadata["repository"]
       repo[:html_url]
+    end
+
+    # Provies a value for the organization field (optional).
+    # Order of precedence:
+    # 1. List of overrides
+    # 2. CodeInventory metadata file
+    # 3. No organization field
+    def organization(repo, inventory_file_metadata)
+      return @overrides[:organization] if @overrides[:organization]
+      return inventory_file_metadata["organization"] if inventory_file_metadata["organization"]
+      nil
     end
 
     def client

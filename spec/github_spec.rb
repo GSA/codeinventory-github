@@ -173,6 +173,18 @@ describe "CodeInventory::GitHub" do
         projects[0]["repository"].must_equal "https://github.com/GSA/ProductOne"
         projects[1]["repository"].must_equal "https://github.com/GSA/ProductTwo"
       end
+
+      it "does not set an organization field" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
+        projects = source.projects
+        projects[0].keys.wont_include "organization"
+        projects[1].keys.wont_include "organization"
+      end
     end
 
     describe "when inventory files are present" do
@@ -290,6 +302,20 @@ describe "CodeInventory::GitHub" do
         projects[0]["repository"].must_equal "http://www.example.com/AlternateRepoURL"
         projects[1]["repository"].must_equal "https://github.com/GSA/ProductTwo"
       end
+
+      it "uses the inventory file for organization" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_with_json_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.json", "product_two_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
+        projects = source.projects
+        projects[0]["organization"].must_equal "ABC Bureau"
+        projects[1]["organization"].must_be_nil
+      end
     end
 
     describe "when overrides are present" do
@@ -385,6 +411,19 @@ describe "CodeInventory::GitHub" do
         projects = source.projects
         projects[0]["repository"].must_equal "http://www.example.org/RepoOverride"
         projects[1]["repository"].must_equal "http://www.example.org/RepoOverride"
+      end
+
+      it "uses the provided override for organization" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        overrides = { organization: "XYZ Bureau" }
+        source = CodeInventory::GitHub.new(access_token: @access_token, org: @org, overrides: overrides)
+        projects = source.projects
+        projects[0]["organization"].must_equal "XYZ Bureau"
+        projects[1]["organization"].must_equal "XYZ Bureau"
       end
     end
   end
