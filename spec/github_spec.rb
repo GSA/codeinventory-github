@@ -400,7 +400,7 @@ describe "CodeInventory::GitHub" do
         projects[1]["contact"]["email"].must_equal "contact@example.com"
       end
 
-      it "uses the provided override for contact.email" do
+      it "uses the provided override for repository" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
