@@ -58,6 +58,7 @@ tags:
   - usa
 contact:
   email: example@example.com
+repository: https://github.com/octocat/Spoon-Knife
 ```
 
 #### JSON Format (.codeinventory.json)
@@ -74,7 +75,8 @@ contact:
   ],
   "contact": {
     "email": "example@example.com"
-  }
+  },
+  "repository": "https://github.com/octocat/Spoon-Knife"
 }
 ```
 
