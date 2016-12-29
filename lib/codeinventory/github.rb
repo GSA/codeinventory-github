@@ -29,6 +29,7 @@ module CodeInventory
         repo_metadata["governmentWideReuseProject"] = government_wide_reuse_project(repo, inventory_file_metadata)
         repo_metadata["tags"] = tags(repo, inventory_file_metadata)
         repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
+        repo_metadata["repository"] = repository(repo, inventory_file_metadata)
         projects << repo_metadata
       end
       projects
@@ -134,6 +135,17 @@ module CodeInventory
       return inventory_file_metadata["contact"]["email"] if inventory_file_metadata.dig("contact", "email")
       org = client.organization(@org)
       org[:email]
+    end
+
+    # Provies a value for the repository field.
+    # Order of precedence:
+    # 1. List of overrides
+    # 2. CodeInventory metadata file
+    # 3. GitHub repository URL
+    def repository(repo, inventory_file_metadata)
+      return @overrides[:repository] if @overrides[:repository]
+      return inventory_file_metadata["repository"] if inventory_file_metadata["repository"]
+      repo[:html_url]
     end
 
     def client

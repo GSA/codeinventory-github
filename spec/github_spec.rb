@@ -159,7 +159,19 @@ describe "CodeInventory::GitHub" do
         source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
         projects = source.projects
         projects[0]["contact"]["email"].must_equal "github-admins@gsa.gov"
-        projects[0]["contact"]["email"].must_equal "github-admins@gsa.gov"
+        projects[1]["contact"]["email"].must_equal "github-admins@gsa.gov"
+      end
+
+      it "uses the GitHub URL for repository" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
+        projects = source.projects
+        projects[0]["repository"].must_equal "https://github.com/GSA/ProductOne"
+        projects[1]["repository"].must_equal "https://github.com/GSA/ProductTwo"
       end
     end
 
@@ -264,6 +276,20 @@ describe "CodeInventory::GitHub" do
         projects[0]["contact"]["email"].must_equal "example@example.com"
         projects[1]["contact"]["email"].must_equal "example@example.com"
       end
+
+      it "uses the inventory file for repository" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_with_json_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.json", "product_two_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
+        projects = source.projects
+        projects[0]["repository"].must_equal "http://www.example.com/AlternateRepoURL"
+        projects[1]["repository"].must_equal "https://github.com/GSA/ProductTwo"
+      end
     end
 
     describe "when overrides are present" do
@@ -346,6 +372,19 @@ describe "CodeInventory::GitHub" do
         projects = source.projects
         projects[0]["contact"]["email"].must_equal "contact@example.com"
         projects[1]["contact"]["email"].must_equal "contact@example.com"
+      end
+
+      it "uses the provided override for contact.email" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        overrides = { repository: "http://www.example.org/RepoOverride" }
+        source = CodeInventory::GitHub.new(access_token: @access_token, org: @org, overrides: overrides)
+        projects = source.projects
+        projects[0]["repository"].must_equal "http://www.example.org/RepoOverride"
+        projects[1]["repository"].must_equal "http://www.example.org/RepoOverride"
       end
     end
   end
