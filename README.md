@@ -59,6 +59,7 @@ tags:
 contact:
   email: example@example.com
 repository: https://github.com/octocat/Spoon-Knife
+organization: ABC Bureau
 ```
 
 #### JSON Format (.codeinventory.json)
@@ -76,7 +77,8 @@ repository: https://github.com/octocat/Spoon-Knife
   "contact": {
     "email": "example@example.com"
   },
-  "repository": "https://github.com/octocat/Spoon-Knife"
+  "repository": "https://github.com/octocat/Spoon-Knife",
+  "organization": "ABC Bureau"
 }
 ```
 
