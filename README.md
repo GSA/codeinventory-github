@@ -8,6 +8,20 @@ The `codeinventory-github` gem is a [CodeInventory](https://github.com/GSA/codei
 * GitHub metadata
 * Manually specified overrides
 
+This tool currently supports the following code.json fields:
+
+* name
+* description
+* license
+* openSourceProject
+* governmentWideReuseProject
+* tags
+* contact > email
+* repository
+* organization
+
+Most of these are fields required by [Code.gov](https://code.gov/). The plan is to gradually add in the rest of the optional fields.
+
 ## Installation
 
 Add this line to your application's Gemfile:
