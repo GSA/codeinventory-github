@@ -143,11 +143,11 @@ module CodeInventory
     # Order of precedence:
     # 1. List of overrides
     # 2. CodeInventory metadata file
-    # 3. GitHub repository URL
+    # 3. If repo is public, GitHub repository URL, otherwise nil
     def repository(repo, inventory_file_metadata)
       return @overrides[:repository] if @overrides[:repository]
       return inventory_file_metadata["repository"] if inventory_file_metadata["repository"]
-      repo[:html_url]
+      repo[:private] ? nil : repo[:html_url]
     end
 
     # Provies a value for the organization field (optional).

@@ -171,7 +171,7 @@ describe "CodeInventory::GitHub" do
         source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
         projects = source.projects
         projects[0]["repository"].must_equal "https://github.com/GSA/ProductOne"
-        projects[1]["repository"].must_equal "https://github.com/GSA/ProductTwo"
+        projects[1]["repository"].must_be_nil
       end
 
       it "does not set an organization field" do
@@ -300,7 +300,7 @@ describe "CodeInventory::GitHub" do
         source = CodeInventory::GitHub.new(access_token: @access_token, org: @org)
         projects = source.projects
         projects[0]["repository"].must_equal "http://www.example.com/AlternateRepoURL"
-        projects[1]["repository"].must_equal "https://github.com/GSA/ProductTwo"
+        projects[1]["repository"].must_be_nil
       end
 
       it "uses the inventory file for organization" do
