@@ -4,7 +4,7 @@ require "base64"
 
 module CodeInventory
   class GitHub
-    VERSION = "0.1.2"
+    VERSION = "0.1.3"
     attr_accessor :org, :overrides, :exclude
 
     def initialize(access_token:, org:, overrides: {}, exclude: [])
@@ -44,7 +44,9 @@ module CodeInventory
       inventory_file = repo_contents.select { |file| filenames.include? file[:name] }.first
       unless inventory_file.nil?
         file_content = client.contents(repo[:full_name], path: inventory_file[:path])
-        raw_content = Base64.decode64(file_content[:content]).force_encoding("UTF-8")
+        raw_content = Base64.decode64(file_content[:content])
+        # Remove UTF-8 BOM if there is one; it throws off JSON.parse
+        raw_content.sub!("\xEF\xBB\xBF".force_encoding("ASCII-8BIT"), "")
         if inventory_file[:name].end_with? ".yml"
           metadata = YAML.load(raw_content).to_hash
         elsif inventory_file[:name].end_with? ".json"
