@@ -44,7 +44,7 @@ module CodeInventory
       inventory_file = repo_contents.select { |file| filenames.include? file[:name] }.first
       unless inventory_file.nil?
         file_content = client.contents(repo[:full_name], path: inventory_file[:path])
-        raw_content = Base64.decode64(file_content[:content])
+        raw_content = Base64.decode64(file_content[:content]).force_encoding("UTF-8")
         if inventory_file[:name].end_with? ".yml"
           metadata = YAML.load(raw_content).to_hash
         elsif inventory_file[:name].end_with? ".json"
