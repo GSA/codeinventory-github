@@ -4,7 +4,7 @@ require "base64"
 
 module CodeInventory
   class GitHub
-    VERSION = "0.1.4"
+    VERSION = "0.1.5"
     attr_accessor :org, :overrides, :exclude
 
     def initialize(auth, org, overrides: {}, exclude: [])
@@ -39,6 +39,8 @@ module CodeInventory
 
     # Checks if the repo has an inventory file. If so, loads its metadata.
     def inventory_file(repo)
+      metadata = {}
+      return metadata if repo[:size] == 0 # Empty repo
       filenames = [ ".codeinventory.yml", "codeinventory.yml", ".codeinventory.json", "codeinventory.json"]
       repo_contents = client.contents(repo[:full_name], path: "/")
       inventory_file = repo_contents.select { |file| filenames.include? file[:name] }.first
@@ -53,7 +55,7 @@ module CodeInventory
           metadata = JSON.parse(raw_content)
         end
       end
-      metadata || {}
+      metadata
     end
 
     # Provides a value for the name field.
