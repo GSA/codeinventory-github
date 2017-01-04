@@ -4,12 +4,12 @@ require "base64"
 
 module CodeInventory
   class GitHub
-    VERSION = "0.1.3"
+    VERSION = "0.1.4"
     attr_accessor :org, :overrides, :exclude
 
-    def initialize(access_token:, org:, overrides: {}, exclude: [])
+    def initialize(auth, org, overrides: {}, exclude: [])
       Octokit.auto_paginate = true
-      @access_token = access_token
+      @auth = auth
       @org = org
       @overrides = overrides
       @exclude = exclude
@@ -164,7 +164,7 @@ module CodeInventory
     end
 
     def client
-      @client ||= Octokit::Client.new(access_token: @access_token)
+      @client ||= Octokit::Client.new(@auth)
     end
   end
 end
