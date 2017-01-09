@@ -1,4 +1,5 @@
 require "thor"
+require "codeinventory"
 
 module CodeInventory
   module CLI
