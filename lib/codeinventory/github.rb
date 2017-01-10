@@ -4,7 +4,7 @@ require "base64"
 
 module CodeInventory
   class GitHub
-    VERSION = "0.1.5"
+    VERSION = "0.1.7"
     attr_accessor :org, :overrides, :exclude
 
     def initialize(auth, org, overrides: {}, exclude: [])
@@ -33,6 +33,7 @@ module CodeInventory
         organization = organization(repo, inventory_file_metadata)
         repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
         projects << repo_metadata
+        yield repo_metadata if block_given?
       end
       projects
     end
