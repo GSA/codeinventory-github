@@ -4,7 +4,7 @@ require "base64"
 
 module CodeInventory
   class GitHub
-    VERSION = "0.1.7"
+    VERSION = "0.1.8"
     attr_accessor :org, :overrides, :exclude
 
     def initialize(auth, org, overrides: {}, exclude: [])
@@ -21,19 +21,21 @@ module CodeInventory
       projects = []
       repos.each do |repo|
         inventory_file_metadata = inventory_file(repo)
-        repo_metadata = {}
-        repo_metadata["name"] = name(repo, inventory_file_metadata)
-        repo_metadata["description"] = description(repo, inventory_file_metadata)
-        repo_metadata["license"] = license(repo, inventory_file_metadata)
-        repo_metadata["openSourceProject"] = open_source_project(repo, inventory_file_metadata)
-        repo_metadata["governmentWideReuseProject"] = government_wide_reuse_project(repo, inventory_file_metadata)
-        repo_metadata["tags"] = tags(repo, inventory_file_metadata)
-        repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
-        repo_metadata["repository"] = repository(repo, inventory_file_metadata)
-        organization = organization(repo, inventory_file_metadata)
-        repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
-        projects << repo_metadata
-        yield repo_metadata if block_given?
+        unless inventory_file_metadata.dig("codeinventory", "exclude")
+          repo_metadata = {}
+          repo_metadata["name"] = name(repo, inventory_file_metadata)
+          repo_metadata["description"] = description(repo, inventory_file_metadata)
+          repo_metadata["license"] = license(repo, inventory_file_metadata)
+          repo_metadata["openSourceProject"] = open_source_project(repo, inventory_file_metadata)
+          repo_metadata["governmentWideReuseProject"] = government_wide_reuse_project(repo, inventory_file_metadata)
+          repo_metadata["tags"] = tags(repo, inventory_file_metadata)
+          repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
+          repo_metadata["repository"] = repository(repo, inventory_file_metadata)
+          organization = organization(repo, inventory_file_metadata)
+          repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
+          projects << repo_metadata
+          yield repo_metadata if block_given?
+        end
       end
       projects
     end

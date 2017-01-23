@@ -101,6 +101,27 @@ organization: ABC Bureau
 }
 ```
 
+#### Excluding a repo via the metadata file
+
+The `.codeinventory.yml` or `.codeinventory.json` file can instruct the CodeInventory tool to exclude a repository from the inventory. Use this when you have a repository that should not be included in the inventory for any reason, such as repositories that do not contain source code or contain only experimental code.
+
+YAML (.codeinventory.yml):
+
+```yaml
+codeinventory:
+  exclude: true
+```
+
+JSON (.codeinventory.json):
+
+```json
+{
+  "codeinventory": {
+    "exclude": true
+  }
+}
+```
+
 ### Using overrides
 
 You can override any of the inventory fields by passing an override hash.

@@ -227,6 +227,20 @@ describe "CodeInventory::GitHub" do
     end
 
     describe "when inventory files are present" do
+      it "excludes the repo if the inventory file specifies an exclude" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents_exclude.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_with_json_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.json", "product_two_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub.new({ access_token: @access_token }, @org)
+        projects = source.projects
+        projects.count.must_equal 1
+        projects[0]["name"].must_equal "Product Two"
+      end
+
       it "uses the inventory file for name" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
