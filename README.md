@@ -47,7 +47,7 @@ require "codeinventory"
 require "codeinventory/github"
 
 auth = { access_token: "GITHUB_ACCESS_TOKEN" }
-github_source = CodeInventory::GitHub.new(auth, "GITHUB_ORG_NAME")
+github_source = CodeInventory::GitHub::Source.new(auth, "GITHUB_ORG_NAME")
 
 inventory = CodeInventory::Inventory.new(github_source)
 inventory.projects # Returns an array of projects in the GitHub org
@@ -59,7 +59,7 @@ The `codeinventory-github` plugin will then automatically harvest the given orga
 
 This gem uses the [Octokit](https://github.com/octokit/octokit.rb) GitHub client to interface with the GitHub API.
 
-For the `auth` parameter when instantiating `CodeInventory::GitHub`, provide any type of [authentication information that Octokit supports](https://github.com/octokit/octokit.rb#authentication). Examples: a basic login/password, [OAuth access token](https://developer.github.com/v3/oauth/), or application authentication.
+For the `auth` parameter when instantiating `CodeInventory::GitHub::Source`, provide any type of [authentication information that Octokit supports](https://github.com/octokit/octokit.rb#authentication). Examples: a basic login/password, [OAuth access token](https://developer.github.com/v3/oauth/), or application authentication.
 
 ### Using inventory files
 
@@ -133,7 +133,7 @@ overrides = {
     email: "me@example.com"
   }
 }
-github_source = CodeInventory::GitHub.new({ access_token: "GITHUB_ACCESS_TOKEN" }, "GITHUB_ORG_NAME", overrides: overrides)
+github_source = CodeInventory::GitHub::Source.new({ access_token: "GITHUB_ACCESS_TOKEN" }, "GITHUB_ORG_NAME", overrides: overrides)
 ```
 
 In this example, `codeinventory-github` will set the tags on all your projects to `my-tag-1` and `my-tag-2` also use the contact email you specified on all projects.
@@ -144,7 +144,7 @@ You can exclude any repository from scanning.
 
 ```ruby
 exclusions = ["not-a-real-product", "DontScanMe"]
-github_source = CodeInventory::GitHub.new({ access_token: "GITHUB_ACCESS_TOKEN" }, "GITHUB_ORG_NAME", exclude: exclusions)
+github_source = CodeInventory::GitHub::Source.new({ access_token: "GITHUB_ACCESS_TOKEN" }, "GITHUB_ORG_NAME", exclude: exclusions)
 ```
 
 In this example, `codeinventory-github` will ignore the repositories named `not-a-real-product` or `DontScanMe`.
