@@ -1,5 +1,6 @@
 require "thor"
 require "codeinventory"
+require "codeinventory/github"
 
 module CodeInventory
   module CLI
