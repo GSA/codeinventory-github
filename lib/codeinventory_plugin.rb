@@ -6,6 +6,7 @@ module CodeInventory
   module CLI
     class App < Thor
       desc "github GITHUB_ORG [OPTIONS]", "Build an inventory from GitHub"
+      option "agency-name", aliases: "-n", type: :string, banner: "AGENCY_NAME", desc: "Sets the 'agency' field in the code.json result (default: GitHub org name)"
       option "access-token", aliases: "-a", type: :string, banner: "ACCESS_TOKEN"
       option "client-credentials", aliases: "-c", type: :string, banner: "CLIENT_ID:CLIENT_SECRET"
       option "login", aliases: "-l", type: :string, banner: "USERNAME:PASSWORD"
@@ -36,7 +37,9 @@ module CodeInventory
         end
         source = CodeInventory::GitHub::Source.new(auth, org, overrides: options[:overrides], exclude: options[:exclude])
         inventory = CodeInventory::Inventory.new(source)
-        puts JSON.pretty_generate(inventory.projects)
+        agency = options["agency-name"] || org
+        output = inventory.generate(agency, "1.0.1")
+        puts JSON.pretty_generate(output)
       end
     end
   end
