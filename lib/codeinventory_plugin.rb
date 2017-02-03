@@ -9,8 +9,8 @@ module CodeInventory
       option "access-token", aliases: "-a", type: :string, banner: "ACCESS_TOKEN"
       option "client-credentials", aliases: "-c", type: :string, banner: "CLIENT_ID:CLIENT_SECRET"
       option "login", aliases: "-l", type: :string, banner: "USERNAME:PASSWORD"
-      option :overrides, aliases: "-o", type: :hash, default: {}
-      option :exclude, aliases: "-e", type: :array, default: []
+      option "overrides", aliases: "-o", type: :hash, default: {}
+      option "exclude", aliases: "-e", type: :array, default: []
       def github(org)
         unless !options["access-token"].nil? ^ !options["client-credentials"].nil? ^ !options["login"].nil?
           puts "One authentication method is required (-a, -c, or -l)"
