@@ -4,7 +4,7 @@ require "base64"
 
 module CodeInventory
   class GitHub
-    VERSION = "0.1.8"
+    VERSION = "0.1.9"
     attr_accessor :org, :overrides, :exclude
 
     def initialize(auth, org, overrides: {}, exclude: [])
