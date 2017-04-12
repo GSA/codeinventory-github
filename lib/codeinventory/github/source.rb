@@ -15,6 +15,25 @@ module CodeInventory
         @exclude = exclude
       end
 
+      def project(repo_name)
+        repo = client.repository(repo_name)
+        inventory_file_metadata = inventory_file(repo)
+        unless inventory_file_metadata.dig("codeinventory", "exclude")
+          repo_metadata = {}
+          repo_metadata["name"] = name(repo, inventory_file_metadata)
+          repo_metadata["description"] = description(repo, inventory_file_metadata)
+          repo_metadata["license"] = license(repo, inventory_file_metadata)
+          repo_metadata["openSourceProject"] = open_source_project(repo, inventory_file_metadata)
+          repo_metadata["governmentWideReuseProject"] = government_wide_reuse_project(repo, inventory_file_metadata)
+          repo_metadata["tags"] = tags(repo, inventory_file_metadata)
+          repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
+          repo_metadata["repository"] = repository(repo, inventory_file_metadata)
+          organization = organization(repo, inventory_file_metadata)
+          repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
+          repo_metadata
+        end
+      end
+
       def projects
         repos = client.organization_repositories(@org)
         repos.delete_if { |repo| exclude.include? repo[:name] }
