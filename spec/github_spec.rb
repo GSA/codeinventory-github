@@ -53,7 +53,7 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
         file = file_fixture("two_repos_one_empty.json")
-        repos = JSON.load(file, nil, { symbolize_names: true })
+        repos = JSON.load(file, nil, { symbolize_names: true, create_additions: false })
         empty_repo = @source.inventory_file(repos[1])
         empty_repo.must_be_empty
       end
