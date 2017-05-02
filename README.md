@@ -138,6 +138,20 @@ github_source = CodeInventory::GitHub::Source.new({ access_token: "GITHUB_ACCESS
 
 In this example, `codeinventory-github` will set the tags on all your projects to `my-tag-1` and `my-tag-2` also use the contact email you specified on all projects.
 
+### Using GitHub metadata
+
+If the metadata file does not exist or does not contain a field, and there are no overrides, `codeinventory-github` will use GitHub metadata to populate the field. These fields can be automatically populated from GitHub metadata:
+
+* name - GitHub repository name
+* description - GitHub repository description
+* license - GitHub repository license
+* openSourceProject - `true` if the repository is public, `false` if it is private
+* tags - GitHub repository topics
+* contact > email - GitHub organization email address
+* repository - GitHub repository URL
+
+If you already specify any of the above items in your GitHub repository, there is no need to specify them in a metadata file.
+
 ### Excluding repositories
 
 You can exclude any repository from scanning.
