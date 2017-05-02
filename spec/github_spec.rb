@@ -193,20 +193,6 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["tags"].must_include "GSA"
       end
 
-      # it "uses the GitHub org name for tags" do
-      #   stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
-      #   stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
-      #   stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
-      #   stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
-      #   stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
-      #   source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
-      #   projects = source.projects
-      #   projects[0]["tags"].count.must_equal 1
-      #   projects[0]["tags"].must_include "GSA"
-      #   projects[1]["tags"].count.must_equal 1
-      #   projects[1]["tags"].must_include "GSA"
-      # end
-
       it "uses the GitHub org email for contact.email" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
