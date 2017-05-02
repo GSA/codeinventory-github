@@ -82,6 +82,11 @@
     "forks_count": 0,
     "mirror_url": null,
     "open_issues_count": 0,
+    "topics": [
+      "topic1",
+      "topic2",
+      "topic3"
+    ],
     "forks": 0,
     "open_issues": 0,
     "watchers": 4,
@@ -171,6 +176,8 @@
     "forks_count": 0,
     "mirror_url": null,
     "open_issues_count": 0,
+    "topics": [
+    ],
     "forks": 0,
     "open_issues": 0,
     "watchers": 2,

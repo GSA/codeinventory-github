@@ -16,7 +16,8 @@ module CodeInventory
       end
 
       def project(repo_name)
-        repo = client.repository(repo_name)
+        headers = { accept: "application/vnd.github.mercy-preview+json" } # for GitHub topics preview
+        repo = client.repository(repo_name, headers)
         inventory_file_metadata = inventory_file(repo)
         unless inventory_file_metadata.dig("codeinventory", "exclude")
           repo_metadata = {}
@@ -35,7 +36,8 @@ module CodeInventory
       end
 
       def projects
-        repos = client.organization_repositories(@org)
+        headers = { accept: "application/vnd.github.mercy-preview+json" } # for GitHub topics preview
+        repos = client.organization_repositories(@org, headers)
         repos.delete_if { |repo| exclude.include? repo[:name] }
         projects = []
         repos.each do |repo|
@@ -146,10 +148,12 @@ module CodeInventory
       # Order of precedence:
       # 1. List of overrides
       # 2. CodeInventory metadata file
-      # 3. A single tag consisting of the org name.
+      # 3. GitHub topics
+      # 4. A single tag consisting of the org name.
       def tags(repo, inventory_file_metadata)
         return @overrides[:tags] if @overrides[:tags]
         return inventory_file_metadata["tags"] if inventory_file_metadata["tags"]
+        return repo[:topics] unless (repo[:topics].nil? || repo[:topics].empty?)
         [repo[:owner][:login]]
       end
 
