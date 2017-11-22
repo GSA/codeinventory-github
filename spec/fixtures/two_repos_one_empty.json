@@ -87,6 +87,13 @@
       "topic2",
       "topic3"
     ],
+    "license": {
+      "key": "other",
+      "name": "Other",
+      "spdx_id": null,
+      "url": null,
+      "featured": false
+    },
     "forks": 0,
     "open_issues": 0,
     "watchers": 4,
@@ -178,6 +185,13 @@
     "open_issues_count": 0,
     "topics": [
     ],
+    "license": {
+      "key": "unlicense",
+      "name": "The Unlicense",
+      "spdx_id": "Unlicense",
+      "url": "https://api.github.com/licenses/unlicense",
+      "featured": false
+    },
     "forks": 0,
     "open_issues": 0,
     "watchers": 2,

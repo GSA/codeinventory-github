@@ -139,7 +139,7 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["description"].must_equal "ProductTwo"
       end
 
-      it "uses the GitHub metadata for license" do
+      it "uses the GitHub metadata for permissions.licenses" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
@@ -147,11 +147,11 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
         projects = source.projects
-        projects[0]["license"].must_equal "https://github.com/GSA/ProductOne/blob/dev/LICENSE.md"
-        projects[1]["license"].must_equal "https://github.com/GSA/ProductTwo/blob/dev/LICENSE.md"
+        projects[0]["permissions"]["licenses"].must_be_nil
+        projects[1]["permissions"]["licenses"].must_equal [ { "URL": "https://api.github.com/licenses/unlicense", "name": "Unlicense" } ]
       end
 
-      it "uses the GitHub metadata for openSourceProject" do
+      it "uses the GitHub metadata for permissions.usageType" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
@@ -159,20 +159,8 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
         projects = source.projects
-        projects[0]["openSourceProject"].must_equal 1
-        projects[1]["openSourceProject"].must_equal 0
-      end
-
-      it "assumes true for governmentWideReuseProject" do
-        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
-        source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
-        projects = source.projects
-        projects[0]["governmentWideReuseProject"].must_equal 1
-        projects[1]["governmentWideReuseProject"].must_equal 1
+        projects[0]["permissions"]["usageType"].must_equal "openSource"
+        projects[1]["permissions"]["usageType"].must_equal "governmentWideReuse"
       end
 
       it "uses the GitHub metadata or org name for tags" do
@@ -205,7 +193,7 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["contact"]["email"].must_equal "github-admins@gsa.gov"
       end
 
-      it "uses the GitHub URL for repository" do
+      it "uses the GitHub URL for repositoryURL" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
@@ -213,8 +201,20 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
         projects = source.projects
-        projects[0]["repository"].must_equal "https://github.com/GSA/ProductOne"
-        projects[1]["repository"].must_be_nil
+        projects[0]["repositoryURL"].must_equal "https://github.com/GSA/ProductOne"
+        projects[1]["repositoryURL"].must_be_nil
+      end
+
+      it "sets laborHours to 0" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
+        projects = source.projects
+        projects[0]["laborHours"].must_equal 0
+        projects[1]["laborHours"].must_equal 0
       end
 
       it "does not set an organization field" do
@@ -273,7 +273,7 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["description"].must_equal "Another awesome product, but not open source for security reasons."
       end
 
-      it "uses the inventory file for license" do
+      it "uses the inventory file for permissions.licenses" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
@@ -283,11 +283,11 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
         projects = source.projects
-        projects[0]["license"].must_equal "http://www.usa.gov/publicdomain/label/1.0/"
-        projects[1]["license"].must_equal "http://www.usa.gov/publicdomain/label/1.0/"
+        projects[0]["permissions"]["licenses"].must_equal [ { "URL" => "http://www.usa.gov/publicdomain/label/1.0/", "name" => "CC0" } ]
+        projects[1]["permissions"]["licenses"].must_equal [ { "URL" => "http://www.usa.gov/publicdomain/label/1.0/", "name" => "CC0" } ]
       end
 
-      it "uses the inventory file for openSourceProject" do
+      it "uses the inventory file for permissions.usageType" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_both_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
@@ -297,22 +297,8 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
         projects = source.projects
-        projects[0]["openSourceProject"].must_equal 1
-        projects[1]["openSourceProject"].must_equal 0
-      end
-
-      it "uses the inventory file for governmentWideReuseProject" do
-        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_both_private.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_with_json_inventory.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.json", "product_two_codeinventory_contents.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
-        source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
-        projects = source.projects
-        projects[0]["governmentWideReuseProject"].must_equal 1
-        projects[1]["governmentWideReuseProject"].must_equal 0
+        projects[0]["permissions"]["usageType"].must_equal "openSource"
+        projects[1]["permissions"]["usageType"].must_equal "exemptByNationalSecurity"
       end
 
       it "uses the inventory file for tags" do
@@ -346,7 +332,7 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["contact"]["email"].must_equal "example@example.com"
       end
 
-      it "uses the inventory file for repository" do
+      it "uses the inventory file for repositoryURL" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
@@ -356,8 +342,22 @@ describe "CodeInventory::GitHub::Source" do
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
         projects = source.projects
-        projects[0]["repository"].must_equal "http://www.example.com/AlternateRepoURL"
-        projects[1]["repository"].must_be_nil
+        projects[0]["repositoryURL"].must_equal "http://www.example.com/AlternateRepoURL"
+        projects[1]["repositoryURL"].must_be_nil
+      end
+
+      it "uses the inventory file for laborHours" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_with_yaml_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/.codeinventory.yml", "product_one_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_with_json_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/.codeinventory.json", "product_two_codeinventory_contents.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org)
+        projects = source.projects
+        projects[0]["laborHours"].must_equal 500
+        projects[1]["laborHours"].must_equal 1000
       end
 
       it "uses the inventory file for organization" do
@@ -390,41 +390,28 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["description"].must_equal "foo"
       end
 
-      it "uses the provided override for license" do
+      it "uses the provided override for permissions.licenses" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
-        overrides = { license: "http://example.com/license" }
+        overrides = { permissions: { licenses: [ { "URL" => "http://example.com/license", "name" => "LIC" } ] } }
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org, overrides: overrides)
         projects = source.projects
-        projects[0]["license"].must_equal "http://example.com/license"
-        projects[1]["license"].must_equal "http://example.com/license"
+        projects[0]["permissions"]["licenses"].must_equal [ { "URL" => "http://example.com/license", "name" => "LIC" } ]
+        projects[1]["permissions"]["licenses"].must_equal [ { "URL" => "http://example.com/license", "name" => "LIC" } ]
       end
 
-      it "uses the provided override for openSourceProject" do
+      it "uses the provided override for permissions.usageType" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
-        overrides = { openSourceProject: 0 }
+        overrides = { permissions: { usageType: "openSource" } }
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org, overrides: overrides)
         projects = source.projects
-        projects[0]["openSourceProject"].must_equal 0
-        projects[1]["openSourceProject"].must_equal 0
-      end
-
-      it "uses the provided override for governmentWideReuseProject" do
-        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
-        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
-        overrides = { governmentWideReuseProject: 0 }
-        source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org, overrides: overrides)
-        projects = source.projects
-        projects[0]["governmentWideReuseProject"].must_equal 0
-        projects[1]["governmentWideReuseProject"].must_equal 0
+        projects[0]["permissions"]["usageType"].must_equal "openSource"
+        projects[1]["permissions"]["usageType"].must_equal "openSource"
       end
 
       it "uses the provided override for tags" do
@@ -457,17 +444,30 @@ describe "CodeInventory::GitHub::Source" do
         projects[1]["contact"]["email"].must_equal "contact@example.com"
       end
 
-      it "uses the provided override for repository" do
+      it "uses the provided override for repositoryURL" do
         stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
         stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
-        overrides = { repository: "http://www.example.org/RepoOverride" }
+        overrides = { repositoryURL: "http://www.example.org/RepoOverride" }
         source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org, overrides: overrides)
         projects = source.projects
-        projects[0]["repository"].must_equal "http://www.example.org/RepoOverride"
-        projects[1]["repository"].must_equal "http://www.example.org/RepoOverride"
+        projects[0]["repositoryURL"].must_equal "http://www.example.org/RepoOverride"
+        projects[1]["repositoryURL"].must_equal "http://www.example.org/RepoOverride"
+      end
+
+      it "uses the provided override for laborHours" do
+        stub_and_return_json("https://api.github.com/orgs/GSA/repos?per_page=100", "two_repos_one_private.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductOne/license", "product_one_license.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/contents/", "repo_contents_without_inventory.json")
+        stub_and_return_json("https://api.github.com/repos/GSA/ProductTwo/license", "product_two_license.json")
+        overrides = { laborHours: 600 }
+        source = CodeInventory::GitHub::Source.new({ access_token: @access_token }, @org, overrides: overrides)
+        projects = source.projects
+        projects[0]["laborHours"].must_equal 600
+        projects[1]["laborHours"].must_equal 600
       end
 
       it "uses the provided override for organization" do

@@ -16,49 +16,54 @@ module CodeInventory
       end
 
       def project(repo_name)
-        headers = { accept: "application/vnd.github.mercy-preview+json" } # for GitHub topics preview
+        # mercy = GitHub topics preview
+        # drax = GitHub license preview
+        headers = {
+          accept: [ "application/vnd.github.mercy-preview+json", "application/vnd.github.drax-preview+json" ]
+        }
         repo = client.repository(repo_name, headers)
         inventory_file_metadata = inventory_file(repo)
         unless inventory_file_metadata.dig("codeinventory", "exclude")
-          repo_metadata = {}
-          repo_metadata["name"] = name(repo, inventory_file_metadata)
-          repo_metadata["description"] = description(repo, inventory_file_metadata)
-          repo_metadata["license"] = license(repo, inventory_file_metadata)
-          repo_metadata["openSourceProject"] = open_source_project(repo, inventory_file_metadata)
-          repo_metadata["governmentWideReuseProject"] = government_wide_reuse_project(repo, inventory_file_metadata)
-          repo_metadata["tags"] = tags(repo, inventory_file_metadata)
-          repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
-          repo_metadata["repository"] = repository(repo, inventory_file_metadata)
-          organization = organization(repo, inventory_file_metadata)
-          repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
-          repo_metadata
+          build_metadata(repo, inventory_file_metadata)
         end
       end
 
       def projects
-        headers = { accept: "application/vnd.github.mercy-preview+json" } # for GitHub topics preview
+        # mercy = GitHub topics preview
+        # drax = GitHub license preview
+        headers = {
+          accept: [ "application/vnd.github.mercy-preview+json", "application/vnd.github.drax-preview+json" ]
+        }
         repos = client.organization_repositories(@org, headers)
         repos.delete_if { |repo| exclude.include? repo[:name] }
         projects = []
         repos.each do |repo|
           inventory_file_metadata = inventory_file(repo)
           unless inventory_file_metadata.dig("codeinventory", "exclude")
-            repo_metadata = {}
-            repo_metadata["name"] = name(repo, inventory_file_metadata)
-            repo_metadata["description"] = description(repo, inventory_file_metadata)
-            repo_metadata["license"] = license(repo, inventory_file_metadata)
-            repo_metadata["openSourceProject"] = open_source_project(repo, inventory_file_metadata)
-            repo_metadata["governmentWideReuseProject"] = government_wide_reuse_project(repo, inventory_file_metadata)
-            repo_metadata["tags"] = tags(repo, inventory_file_metadata)
-            repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
-            repo_metadata["repository"] = repository(repo, inventory_file_metadata)
-            organization = organization(repo, inventory_file_metadata)
-            repo_metadata["organization"] = organization(repo, inventory_file_metadata) unless organization.nil?
-            projects << repo_metadata
+            projects << build_metadata(repo, inventory_file_metadata)
             yield repo_metadata if block_given?
           end
         end
         projects
+      end
+
+      def build_metadata(repo, inventory_file_metadata)
+        repo_metadata = {}
+        repo_metadata["name"] = name(repo, inventory_file_metadata)
+        repo_metadata["description"] = description(repo, inventory_file_metadata)
+        usage_type = usage_type(repo, inventory_file_metadata)
+        repo_metadata["permissions"] = {
+          "licenses" => licenses(repo, inventory_file_metadata),
+          "usageType" => usage_type,
+          "exemptionText" => exemption_text(repo, inventory_file_metadata)
+        }
+        repo_metadata["tags"] = tags(repo, inventory_file_metadata)
+        repo_metadata["contact"] = { "email" => contact_email(repo, inventory_file_metadata) }
+        repo_metadata["repositoryURL"] = repository(repo, inventory_file_metadata)
+        repo_metadata["laborHours"] = labor_hours(repo, inventory_file_metadata)
+        organization = organization(repo, inventory_file_metadata)
+        repo_metadata["organization"] = organization unless organization.nil?
+        repo_metadata
       end
 
       # Checks if the repo has an inventory file. If so, loads its metadata.
@@ -104,44 +109,43 @@ module CodeInventory
         repo[:name]
       end
 
-      # Provides a value for the license field.
+      # Provides a value for the permissions.licenses field.
       # Order of precedence:
       # 1. List of overrides
       # 2. CodeInventory metadata file
-      # 3. LICENSE.md or LICENSE file in the repository
+      # 3. GitHub repository license
       # 4. nil
-      def license(repo, inventory_file_metadata)
-        return @overrides[:license] if @overrides[:license]
-        return inventory_file_metadata["license"] if inventory_file_metadata["license"]
-        # Need to set header to quiet warning about using a GitHub preview feature
-        headers = { accept: "application/vnd.github.drax-preview+json" }
-        begin
-          license_meta = client.repository_license_contents(repo[:full_name], headers)
-          license = license_meta[:html_url]
-        rescue Octokit::NotFound ; end
-        license
+      def licenses(repo, inventory_file_metadata)
+        return @overrides[:permissions][:licenses] if @overrides.dig(:permissions, :licenses)
+        return inventory_file_metadata["permissions"]["licenses"] if inventory_file_metadata.dig("permissions", "licenses")
+        require 'pp'
+        if repo[:license] && repo[:license][:url] && repo[:license][:spdx_id]
+          return [ { "URL": repo[:license][:url], "name": repo[:license][:spdx_id] } ]
+        end
+        nil
       end
 
-      # Provides a value for the openSourceProject field.
+      # Provides a value for the permissions.usageType field.
       # Order of precedence:
       # 1. List of overrides
       # 2. CodeInventory metadata file
-      # 3. GitHub repository public/private status (public=1; private=0)
-      def open_source_project(repo, inventory_file_metadata)
-        return @overrides[:openSourceProject] if @overrides[:openSourceProject]
-        return inventory_file_metadata["openSourceProject"] if inventory_file_metadata["openSourceProject"]
-        repo[:private] ? 0 : 1
+      # 3. GitHub repository public/private status (public=openSource; private=governmentWideReuse)
+      #    Note: exempt* values must be set either in overrides or the metadata file.
+      def usage_type(repo, inventory_file_metadata)
+        return @overrides[:permissions][:usageType] if @overrides.dig(:permissions, :usageType)
+        return inventory_file_metadata["permissions"]["usageType"] if inventory_file_metadata.dig("permissions", "usageType")
+        repo[:private] ? "governmentWideReuse" : "openSource"
       end
 
-      # Provides a value for the governmentWideReuseProject field.
+      # Provides a value for the permissions.exemptionText field.
       # Order of precedence:
       # 1. List of overrides
       # 2. CodeInventory metadata file
-      # 3. 1 (assume government-wide reuse)
-      def government_wide_reuse_project(repo, inventory_file_metadata)
-        return @overrides[:governmentWideReuseProject] if @overrides[:governmentWideReuseProject]
-        return inventory_file_metadata["governmentWideReuseProject"] if inventory_file_metadata["governmentWideReuseProject"]
-        1
+      # 3. nil
+      def exemption_text(repo, inventory_file_metadata)
+        return @overrides[:permissions][:exemptionText] if @overrides.dig(:permissions, :exemptionText)
+        return inventory_file_metadata["permissions"]["exemptionText"] if inventory_file_metadata.dig("permissions", "exemptionText")
+        nil
       end
 
       # Provides a value for the tags field.
@@ -169,15 +173,26 @@ module CodeInventory
         org[:email]
       end
 
-      # Provies a value for the repository field.
+      # Provies a value for the repositoryURL field.
       # Order of precedence:
       # 1. List of overrides
       # 2. CodeInventory metadata file
       # 3. If repo is public, GitHub repository URL, otherwise nil
       def repository(repo, inventory_file_metadata)
-        return @overrides[:repository] if @overrides[:repository]
-        return inventory_file_metadata["repository"] if inventory_file_metadata["repository"]
+        return @overrides[:repositoryURL] if @overrides[:repositoryURL]
+        return inventory_file_metadata["repositoryURL"] if inventory_file_metadata["repositoryURL"]
         repo[:private] ? nil : repo[:html_url]
+      end
+
+      # Provies a value for the laborHours field.
+      # Order of precedence:
+      # 1. List of overrides
+      # 2. CodeInventory metadata file
+      # 3. 0
+      def labor_hours(repo, inventory_file_metadata)
+        return @overrides[:laborHours] if @overrides[:laborHours]
+        return inventory_file_metadata["laborHours"] if inventory_file_metadata["laborHours"]
+        0
       end
 
       # Provies a value for the organization field (optional).

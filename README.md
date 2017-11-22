@@ -8,16 +8,16 @@ The `codeinventory-github` gem is a [CodeInventory](https://github.com/GSA/codei
 * GitHub metadata
 * Manually specified overrides
 
-This tool currently supports the following code.json fields:
+This tool currently supports the following code.json fields, based on Code.gov metadata 2.0.0:
 
 * name
 * description
-* license
-* openSourceProject
-* governmentWideReuseProject
+* permissions > licenses
+* permissions > usageType
+* permissions > exemptionTexzt
 * tags
 * contact > email
-* repository
+* repositoryURL
 * organization
 
 Most of these are fields required by [Code.gov](https://code.gov/). The plan is to gradually add in the rest of the optional fields.
@@ -70,14 +70,16 @@ If you want more fine-grained control over project metadata beyond what is in th
 ```yaml
 name: Product One
 description: An awesome product.
-license: http://www.usa.gov/publicdomain/label/1.0/
-openSourceProject: 1
-governmentWideReuseProject: 1
+permissions:
+  licenses:
+    - URL: http://www.usa.gov/publicdomain/label/1.0/
+      name: PD
+  usageType: openSource
 tags:
   - usa
 contact:
   email: example@example.com
-repository: https://github.com/octocat/Spoon-Knife
+repositoryURL: https://github.com/octocat/Spoon-Knife
 organization: ABC Bureau
 ```
 
@@ -87,16 +89,19 @@ organization: ABC Bureau
 {
   "name": "Product One",
   "description": "An awesome product.",
-  "license": "http://www.usa.gov/publicdomain/label/1.0/",
-  "openSourceProject": 1,
-  "governmentWideReuseProject": 1,
+  "permissions": {
+    "licenses": [
+      { "URL": "http://www.usa.gov/publicdomain/label/1.0/", name: "PD" }
+    ],
+    "usageType": "openSource"
+  }
   "tags": [
     "usa"
   ],
   "contact": {
     "email": "example@example.com"
   },
-  "repository": "https://github.com/octocat/Spoon-Knife",
+  "repositoryURL": "https://github.com/octocat/Spoon-Knife",
   "organization": "ABC Bureau"
 }
 ```
@@ -144,11 +149,11 @@ If the metadata file does not exist or does not contain a field, and there are n
 
 * name - GitHub repository name
 * description - GitHub repository description
-* license - GitHub repository license
-* openSourceProject - `true` if the repository is public, `false` if it is private
+* permissions > license - GitHub repository license
+* permissions > usageType - `openSource` if the repository is public, `governmentWideReuse` if it is private 
 * tags - GitHub repository topics
 * contact > email - GitHub organization email address
-* repository - GitHub repository URL
+* repositoryURL - GitHub repository URL
 
 If you already specify any of the above items in your GitHub repository, there is no need to specify them in a metadata file.
 
