@@ -1,11 +1,14 @@
 name: Product One
 description: An awesome product.
-license: http://www.usa.gov/publicdomain/label/1.0/
-openSourceProject: 1
-governmentWideReuseProject: 1
+permissions:
+  licenses:
+    - URL: http://www.usa.gov/publicdomain/label/1.0/
+      name: CC0
+  usageType: openSource
 tags:
   - usa
 contact:
   email: example@example.com
-repository: http://www.example.com/AlternateRepoURL
+repositoryURL: http://www.example.com/AlternateRepoURL
+laborHours: 500
 organization: ABC Bureau
