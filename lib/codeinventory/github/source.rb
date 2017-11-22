@@ -40,7 +40,8 @@ module CodeInventory
         repos.each do |repo|
           inventory_file_metadata = inventory_file(repo)
           unless inventory_file_metadata.dig("codeinventory", "exclude")
-            projects << build_metadata(repo, inventory_file_metadata)
+            repo_metadata = build_metadata(repo, inventory_file_metadata)
+            projects << repo_metadata
             yield repo_metadata if block_given?
           end
         end
