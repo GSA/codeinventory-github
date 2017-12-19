@@ -91,7 +91,7 @@ organization: ABC Bureau
   "description": "An awesome product.",
   "permissions": {
     "licenses": [
-      { "URL": "http://www.usa.gov/publicdomain/label/1.0/", name: "PD" }
+      { "URL": "http://www.usa.gov/publicdomain/label/1.0/", "name": "PD" }
     ],
     "usageType": "openSource"
   }
