@@ -94,7 +94,7 @@ organization: ABC Bureau
       { "URL": "http://www.usa.gov/publicdomain/label/1.0/", "name": "PD" }
     ],
     "usageType": "openSource"
-  }
+  },
   "tags": [
     "usa"
   ],
