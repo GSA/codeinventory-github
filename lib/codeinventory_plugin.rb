@@ -38,7 +38,7 @@ module CodeInventory
         source = CodeInventory::GitHub::Source.new(auth, org, overrides: options[:overrides], exclude: options[:exclude])
         inventory = CodeInventory::Inventory.new(source)
         agency = options["agency-name"] || org
-        output = inventory.generate(agency, "1.0.1")
+        output = inventory.generate(agency, "2.0.0")
         puts JSON.pretty_generate(output)
       end
     end
